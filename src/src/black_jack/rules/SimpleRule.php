@@ -11,7 +11,7 @@ use BlackJack\Message;
 
 class SimpleRule extends Rule
 {
-    public function playerHitOrStand(Actor $player, Deck $deck): int
+    public function playerHitOrStand(Actor $player, Deck $deck): void
     {
         $hand = $player->getHand();
         $player->point = $this->pointCalc($hand);
@@ -20,16 +20,16 @@ class SimpleRule extends Rule
         while (true) {
             // hitするかどうか
             if (!Message::QuestionAndReply()) {
-                return $player->point;
+                return;
             }
 
             $this->hitCardHandle($player, $deck);
 
             if ($this->bustCheck($player->point)) {
-                return $player->point;
+                return;
             }
         }
-        return $player->point;
+        return;
     }
 
 }

@@ -10,6 +10,7 @@ abstract class Actor
     protected array $hand;
     public string $name;
     public int $point;
+    public bool $surrender = false;
 
     public function __construct(private Rule $rule)
     {

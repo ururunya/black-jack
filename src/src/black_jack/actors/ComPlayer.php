@@ -18,6 +18,6 @@ class ComPlayer extends Actor
 
     public function hitOrStand(Deck $deck): void
     {
-        $this->point = $this->rule->ComPlayerHitOrStand($this, $deck);
+        $this->rule->ComPlayerHitOrStand($this, $deck);
     }
 }

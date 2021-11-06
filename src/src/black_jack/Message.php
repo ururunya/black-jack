@@ -53,17 +53,17 @@ class Message
         echo "ディーラーの引いた2枚目のカードは{$suit}の{$card->number}でした。" . PHP_EOL;
     }
 
-    public static function drawComment(Actor $player, Actor $dealer)
+    public static function drawComment(Actor $player, Actor $dealer): void
     {
         echo "{$player->name}と{$dealer->name}は引き分けです。" . PHP_EOL;
     }
 
-    public static function winComment(Actor $player)
+    public static function winComment(Actor $player): void
     {
         echo "{$player->name}の勝ちです！" . PHP_EOL;
     }
 
-    public static function loseComment(Actor $player)
+    public static function loseComment(Actor $player): void
     {
         echo "残念！{$player->name}の負けです。" . PHP_EOL;
     }
@@ -94,7 +94,7 @@ class Message
         }
     }
 
-    public static function questionSplit()
+    public static function questionSplit(): bool
     {
         $reply = readline('スプリットしますか？（Y/N）');
         if ($reply === 'Y' || $reply === 'y') {
@@ -103,15 +103,32 @@ class Message
             return false;
         } else {
             echo 'Y/yかN/nを入力してください。';
-            static::questionSplit();
+            return static::questionSplit();
         }
     }
 
-    public static function doSplit(array $hand)
+    public static function doSplit(array $hand): void
     {
         $card1Name = static::SUIT_NAME[$hand[0]->suit];
         $card2Name = static::SUIT_NAME[$hand[1]->suit];
 
         echo "ハンドを{$card1Name}の{$hand[0]->number}と{$card2Name}の{$hand[1]->number}にスプリットします。" . PHP_EOL;
+    }
+
+    public static function questionSurrender(): bool
+    {
+        $reply = readline('サレンダーしますか？（Y/N）');
+        if ($reply === 'Y' || $reply === 'y') {
+            return true;
+        } elseif ($reply === 'N' || $reply === 'n') {
+            return false;
+        } else {
+            echo 'Y/yかN/nを入力してください。';
+            return static::questionSurrender();
+        }
+    }
+
+    public static function surrenderComment(Actor $player): void{
+        echo "{$player->name}はゲームを降りました。" . PHP_EOL;
     }
 }

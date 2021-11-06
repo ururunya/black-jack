@@ -28,7 +28,7 @@ abstract class Rule
     protected const ACE_SMALL_POINT = 1;
     protected const ACE_POINT_DIFFERENCE = 10;
 
-    public function dealerHitOrStand(Actor $dealer, Deck $deck): int
+    public function dealerHitOrStand(Actor $dealer, Deck $deck): void
     {
         $hand = $dealer->getHand();
         $dealer->point = $this->pointCalc($hand);
@@ -38,10 +38,11 @@ abstract class Rule
         while ($dealer->point < 17) {
             $this->hitCardHandle($dealer, $deck);
         }
-        return $dealer->point;
+        return;
     }
 
-    public function ComPlayerHitOrStand(Actor $comPlayer, Deck $deck): int {
+    public function ComPlayerHitOrStand(Actor $comPlayer, Deck $deck): void
+    {
         $hand = $comPlayer->getHand();
         $comPlayer->point = $this->pointCalc($hand);
         Message::pointDisplay($comPlayer);
@@ -49,12 +50,12 @@ abstract class Rule
         while ($comPlayer->point < 17) {
             $this->hitCardHandle($comPlayer, $deck);
         }
-        return $comPlayer->point;
+        return;
     }
 
     abstract public function playerHitOrStand(Actor $player, Deck $deck);
 
-    public function pointCalc(array $hand)
+    public function pointCalc(array $hand): int
     {
         $numbers = [];
         $points = [];
@@ -79,7 +80,7 @@ abstract class Rule
         return $sum;
     }
 
-    protected function hitCardHandle(Actor $actor, Deck $deck)
+    protected function hitCardHandle(Actor $actor, Deck $deck): void
     {
         $hand = $actor->getHand();
         // hitの処理
@@ -118,6 +119,11 @@ abstract class Rule
 
     private function winCheck(Actor $player, Actor $dealer): void
     {
+        if ($player->surrender) {
+            Message::surrenderComment($player);
+            return;
+        }
+
         if ($this->bustCheck($player->point) && $this->bustCheck($dealer->point)) {
             Message::drawComment($player, $dealer);
         } elseif ($this->bustCheck($player->point) && !$this->bustCheck($dealer->point)) {

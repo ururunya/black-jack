@@ -49,7 +49,9 @@ class Game
         foreach ($actors as $actor) {
             $actor->dealCards($deck);
         }
+
         Message::startMessage($actors);
+
         foreach ($actors as $actor) {
             $actor->hitOrStand($deck);
         }
