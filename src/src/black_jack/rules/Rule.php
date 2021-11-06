@@ -105,7 +105,10 @@ abstract class Rule
         $dealer = array_pop($actors);
         $comPlayers = array_slice($actors, 1);
         $allPlayers = [$player, ...$comPlayers];
-        // $playerが$splitCardを持っている場合
+        // $playerが$splitPlayerを持っている場合
+        if (isset($player->splitPlayers)) {
+            $allPlayers = [...$player->splitPlayers, ...$comPlayers];
+        }
 
         foreach ($allPlayers as $player) {
             $this->winCheck($player, $dealer);

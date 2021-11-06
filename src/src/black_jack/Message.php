@@ -77,11 +77,11 @@ class Message
             return true;
         } else {
             echo 'Y/yかN/nを入力してください。';
-            static::QuestionAndReply();
+            return static::QuestionAndReply();
         }
     }
 
-    public static function questionDoubleDown()
+    public static function questionDoubleDown(): bool
     {
         $reply = readline('ダブルダウンしますか？（Y/N）');
         if ($reply === 'Y' || $reply === 'y') {
@@ -90,7 +90,7 @@ class Message
             return false;
         } else {
             echo 'Y/yかN/nを入力してください。';
-            static::questionDoubleDown();
+            return static::questionDoubleDown();
         }
     }
 
@@ -109,6 +109,9 @@ class Message
 
     public static function doSplit(array $hand)
     {
-            echo "ハンドを{$hand[0]}と{$hand[1]}にスプリットします。" . PHP_EOL;
+        $card1Name = static::SUIT_NAME[$hand[0]->suit];
+        $card2Name = static::SUIT_NAME[$hand[1]->suit];
+
+        echo "ハンドを{$card1Name}の{$hand[0]->number}と{$card2Name}の{$hand[1]->number}にスプリットします。" . PHP_EOL;
     }
 }

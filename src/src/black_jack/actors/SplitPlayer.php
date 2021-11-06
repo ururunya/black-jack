@@ -7,10 +7,9 @@ require_once 'Actor.php';
 use BlackJack\Rules\Rule;
 use BlackJack\Cards\Deck;
 
-class Player extends Actor
+class SplitPlayer extends Actor
 {
-    public string $name = 'あなた';
-    public array $splitPlayers;
+    public string $name;
 
     public function __construct(private Rule $rule)
     {
