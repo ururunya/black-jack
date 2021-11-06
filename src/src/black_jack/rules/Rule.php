@@ -1,8 +1,12 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Rules;
 
-require_once 'Message.php';
+require_once __DIR__ . '/../Message.php';
+
+use BlackJack\Actors\Actor;
+use BlackJack\Cards\Deck;
+use BlackJack\Message;
 
 abstract class Rule
 {
@@ -37,7 +41,7 @@ abstract class Rule
         return $dealer->point;
     }
 
-    public function ComPlayerHitOrStand(Actor $comPlayer, Deck $deck) {
+    public function ComPlayerHitOrStand(Actor $comPlayer, Deck $deck): int {
         $hand = $comPlayer->getHand();
         $comPlayer->point = $this->pointCalc($hand);
         Message::pointDisplay($comPlayer);
@@ -101,6 +105,7 @@ abstract class Rule
         $dealer = array_pop($actors);
         $comPlayers = array_slice($actors, 1);
         $allPlayers = [$player, ...$comPlayers];
+        // $playerが$splitCardを持っている場合
 
         foreach ($allPlayers as $player) {
             $this->winCheck($player, $dealer);

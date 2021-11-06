@@ -1,6 +1,6 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Cards;
 
 require_once 'Card.php';
 

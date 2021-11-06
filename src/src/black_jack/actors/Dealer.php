@@ -1,6 +1,9 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Actors;
+
+use BlackJack\Rules\Rule;
+use BlackJack\Cards\Deck;
 
 class Dealer extends Actor
 {
@@ -11,9 +14,8 @@ class Dealer extends Actor
         parent::__construct($rule);
     }
 
-    public function hitOrStand(Deck $deck): int
+    public function hitOrStand(Deck $deck): void
     {
         $this->rule->dealerHitOrStand($this, $deck);
-        return $this->point;
     }
 }

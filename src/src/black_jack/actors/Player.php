@@ -1,21 +1,24 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Actors;
 
 require_once 'Actor.php';
+
+use BlackJack\Rules\Rule;
+use BlackJack\Cards\Deck;
 
 class Player extends Actor
 {
     public string $name = 'あなた';
+    public array $splitHands = [];
 
     public function __construct(private Rule $rule)
     {
         parent::__construct($rule);
     }
 
-    public function hitOrStand(Deck $deck): int
+    public function hitOrStand(Deck $deck): void
     {
-        $this->point = $this->rule->playerHitOrStand($this, $deck);
-        return $this->point;
+        $this->rule->playerHitOrStand($this, $deck);
     }
 }

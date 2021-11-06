@@ -1,9 +1,13 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Rules;
 
 require_once 'Rule.php';
-require_once 'Message.php';
+require_once __DIR__ . '/../Message.php';
+
+use BlackJack\Actors\Actor;
+use BlackJack\Cards\Deck;
+use BlackJack\Message;
 
 class SimpleRule extends Rule
 {

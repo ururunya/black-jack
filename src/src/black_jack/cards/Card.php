@@ -1,6 +1,6 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Cards;
 
 class Card
 {

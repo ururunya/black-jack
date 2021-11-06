@@ -2,6 +2,9 @@
 
 namespace BlackJack;
 
+use BlackJack\Actors\Actor;
+use BlackJack\Cards\Card;
+
 class Message
 {
     private const SUIT_NAME = [
@@ -18,7 +21,7 @@ class Message
             foreach ($actor->getHand() as $card) {
                 $suit = static::SUIT_NAME[$card->suit];
                 echo "{$actor->name}の引いたカードは{$suit}の{$card->number}です。" . PHP_EOL;
-                if ($actor::class === 'BlackJack\Dealer') {
+                if ($actor::class === 'BlackJack\Actors\Dealer') {
                     echo 'ディーラーの引いた2枚目のカードはわかりません。' . PHP_EOL;
                     break;
                 }
@@ -26,34 +29,28 @@ class Message
         }
     }
 
-    public static function hitMessage(Actor $actor, Card $card)
+    public static function hitMessage(Actor $actor, Card $card): void
     {
         $suit = static::SUIT_NAME[$card->suit];
         echo "{$actor->name}の引いたカードは{$suit}の{$card->number}です。" . PHP_EOL;
     }
 
-    public static function pointDisplay(Actor $actor)
+    public static function pointDisplay(Actor $actor): void
     {
         echo "{$actor->name}の現在の得点は{$actor->point}です。" . PHP_EOL;
     }
 
-    public static function actorsPointDisplay(array $actors)
+    public static function actorsPointDisplay(array $actors): void
     {
         foreach ($actors as $actor) {
             echo "{$actor->name}の得点は{$actor->point}です。" . PHP_EOL;
         }
     }
 
-    public static function dealerSecondCardOpen(Card $card)
+    public static function dealerSecondCardOpen(Card $card): void
     {
         $suit = static::SUIT_NAME[$card->suit];
         echo "ディーラーの引いた2枚目のカードは{$suit}の{$card->number}でした。" . PHP_EOL;
-    }
-
-    public static function judgeMessage(array $actors, string $winner)
-    {
-        echo "あなたの得点は{}、ディーラーの得点は{}でした。" . PHP_EOL;
-        echo "{$winner}の勝ちです。";
     }
 
     public static function drawComment(Actor $player, Actor $dealer)
@@ -108,5 +105,10 @@ class Message
             echo 'Y/yかN/nを入力してください。';
             static::questionSplit();
         }
+    }
+
+    public static function doSplit(array $hand)
+    {
+            echo "ハンドを{$hand[0]}と{$hand[1]}にスプリットします。" . PHP_EOL;
     }
 }

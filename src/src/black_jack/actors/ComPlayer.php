@@ -1,8 +1,11 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Actors;
 
 require_once 'Actor.php';
+
+use BlackJack\Rules\Rule;
+use BlackJack\Cards\Deck;
 
 class ComPlayer extends Actor
 {
@@ -13,9 +16,8 @@ class ComPlayer extends Actor
         parent::__construct($rule);
     }
 
-    public function hitOrStand(Deck $deck): int
+    public function hitOrStand(Deck $deck): void
     {
         $this->point = $this->rule->ComPlayerHitOrStand($this, $deck);
-        return $this->point;
     }
 }

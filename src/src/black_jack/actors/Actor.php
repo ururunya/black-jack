@@ -1,6 +1,9 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Actors;
+
+use BlackJack\Rules\Rule;
+use BlackJack\Cards\Deck;
 
 abstract class Actor
 {
@@ -22,11 +25,10 @@ abstract class Actor
         return $this->hand;
     }
 
-    public function dealCards(Deck $deck): array
+    public function dealCards(Deck $deck): void
     {
         $this->hand = $deck->dealCards();
-        return $this->hand;
     }
 
-    abstract public function hitOrStand(Deck $deck): int;
+    abstract public function hitOrStand(Deck $deck): void;
 }

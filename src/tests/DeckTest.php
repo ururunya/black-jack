@@ -2,10 +2,10 @@
 
 namespace Test;
 
-require_once __DIR__ . '/../src/black_jack/Deck.php';
+require_once __DIR__ . '/../src/black_jack/cards/Deck.php';
 
 use PHPUnit\Framework\TestCase;
-use BlackJack\Deck;
+use BlackJack\Cards\Deck;
 
 class DeckTest extends TestCase
 {

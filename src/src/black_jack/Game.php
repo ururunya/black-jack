@@ -2,13 +2,21 @@
 
 namespace BlackJack;
 
-require_once 'Deck.php';
-require_once 'Player.php';
-require_once 'ComPlayer.php';
-require_once 'Dealer.php';
-require_once 'SimpleRule.php';
-require_once 'ExtraRule.php';
+require_once 'cards/Deck.php';
+require_once 'actors/Player.php';
+require_once 'actors/ComPlayer.php';
+require_once 'actors/Dealer.php';
+require_once 'rules/SimpleRule.php';
+require_once 'rules/ExtraRule.php';
 require_once 'Message.php';
+
+use BlackJack\Actors\Player;
+use BlackJack\Actors\Dealer;
+use BlackJack\Actors\ComPlayer;
+use BlackJack\Cards\Deck;
+use BlackJack\Message;
+use BlackJack\Rules\SimpleRule;
+use BlackJack\Rules\ExtraRule;
 
 class Game
 {

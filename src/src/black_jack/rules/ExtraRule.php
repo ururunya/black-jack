@@ -1,9 +1,14 @@
 <?php
 
-namespace BlackJack;
+namespace BlackJack\Rules;
 
 require_once 'Rule.php';
-require_once 'Message.php';
+require_once __DIR__ . '/../Message.php';
+
+use BlackJack\Actors\Actor;
+use BlackJack\Actors\Player;
+use BlackJack\Cards\Deck;
+use BlackJack\Message;
 
 class ExtraRule extends Rule
 {
@@ -44,6 +49,10 @@ class ExtraRule extends Rule
     }
 
     private function doSplit(Player $player, Deck $deck) {
+        $hand = $player->getHand();
+        Message::doSplit($hand);
+        $splitHands = [array_merge([$hand[0]], $deck->hitCard()), array_merge([$hand[1]], $deck->hitCard())];
+
 
     }
 }
