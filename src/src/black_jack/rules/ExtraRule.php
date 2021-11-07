@@ -7,39 +7,37 @@ require_once __DIR__ . '/../Message.php';
 require_once __DIR__ . '/../actors/SplitPlayer.php';
 
 use BlackJack\Actors\Actor;
-use BlackJack\Actors\Player;
 use BlackJack\Actors\SplitPlayer;
 use BlackJack\Cards\Deck;
-use BlackJack\Message;
 
 class ExtraRule extends Rule
 {
     public function playerHitOrStand(Actor $player, Deck $deck): void
     {
         $hand = $player->getHand();
-        $player->point = $this->pointCalc($hand);
-        Message::pointDisplay($player);
+        $player->point = $this->calcPoint($hand);
+        $this->message->displayPoint($player);
         // ダブルダウンするか
-        if (Message::questionDoubleDown()) {
+        if ($this->message->questionChoice(static::DOUBLE_DOWN)) {
             $this->doubleDown($player, $deck);
             return;
         }
         // ペアカードの場合、スプリットするか
         if ($hand[0]->number === $hand[1]->number) {
-            if (Message::questionSplit()) {
+            if ($this->message->questionChoice(static::SPLIT)) {
                 $this->doSplit($player, $deck);
                 return;
             }
         }
         // サレンダー（レイトサレンダー）するか
-        if (Message::questionSurrender()) {
+        if ($this->message->questionChoice(static::SURRENDER)) {
             $player->surrender = true;
             return;
         }
 
         while (true) {
             // hitするかどうか
-            if (!Message::QuestionAndReply()) {
+            if (!$this->message->questionChoice(static::HIT)) {
                 return;
             }
 
@@ -49,23 +47,22 @@ class ExtraRule extends Rule
                 return;
             }
         }
-        return;
     }
 
-    private function doubleDown(Player $player, Deck $deck): void
+    private function doubleDown(Actor $player, Deck $deck): void
     {
         $this->hitCardHandle($player, $deck);
     }
 
-    private function doSplit(Player $player, Deck $deck): void
+    private function doSplit(Actor $player, Deck $deck): void
     {
         $hand = $player->getHand();
-        Message::doSplit($hand);
+        $this->message->doSplit($hand);
         $splitHands = [array_merge([$hand[0]], $deck->hitCard()), array_merge([$hand[1]], $deck->hitCard())];
 
         $splitPlayers = [new SplitPlayer($this), new SplitPlayer($this)];
 
-        foreach ($splitPlayers as $index=>$splitPlayer) {
+        foreach ($splitPlayers as $index => $splitPlayer) {
             $splitPlayer->setHand($splitHands[$index]);
             $number = $index + 1;
             $splitPlayer->name = "スプリットハンド{$number}";
@@ -73,7 +70,7 @@ class ExtraRule extends Rule
 
         foreach ($splitPlayers as $splitPlayer) {
             $card = $splitPlayer->getHand()[1];
-            Message::hitMessage($splitPlayer, $card);
+            $this->message->hitMessage($splitPlayer, $card);
         }
 
         $player->splitPlayers = $splitPlayers;

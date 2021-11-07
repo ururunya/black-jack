@@ -6,6 +6,7 @@ require_once 'Actor.php';
 
 use BlackJack\Rules\Rule;
 use BlackJack\Cards\Deck;
+use BlackJack\Actors\Actor;
 
 class SplitPlayer extends Actor
 {

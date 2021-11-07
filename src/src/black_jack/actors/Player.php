@@ -10,7 +10,6 @@ use BlackJack\Cards\Deck;
 class Player extends Actor
 {
     public string $name = 'あなた';
-    public array $splitPlayers;
 
     public function __construct(private Rule $rule)
     {

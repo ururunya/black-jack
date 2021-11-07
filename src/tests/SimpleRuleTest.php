@@ -27,10 +27,10 @@ class SimpleRuleTest extends TestCase
     //     $this->assertSame(true, is_int($rule->playerHitOrStand($player, $deck, $message)));
     // }
 
-    public function testPointCalc()
+    public function testcalcPoint()
     {
         $rule = new SimpleRule();
         $hand = [new Card('S', 'A'), new Card('H', 'A'), new Card('C', 'A'), new Card('D', 'A'), new Card('C', '7')];
-        $this->assertSame(21, $rule->pointCalc($hand));
+        $this->assertSame(21, $rule->calcPoint($hand));
     }
 }

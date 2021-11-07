@@ -5,11 +5,13 @@ namespace BlackJack\Rules;
 require_once __DIR__ . '/../Message.php';
 
 use BlackJack\Actors\Actor;
+use BlackJack\Actors\Player;
 use BlackJack\Cards\Deck;
 use BlackJack\Message;
 
 abstract class Rule
 {
+    protected Message $message;
     protected const CARD_POINT = [
         'A' => 11,
         '2' => 2,
@@ -27,13 +29,25 @@ abstract class Rule
     ];
     protected const ACE_SMALL_POINT = 1;
     protected const ACE_POINT_DIFFERENCE = 10;
+    protected const DRAW = 'draw';
+    protected const WIN = 'win';
+    protected const LOSE = 'lose';
+    protected const DOUBLE_DOWN = 'double down';
+    protected const SURRENDER = 'surrender';
+    protected const SPLIT = 'split';
+    protected const HIT = 'hit';
+
+    public function __construct()
+    {
+        $this->message = $this->message = new Message();
+    }
 
     public function dealerHitOrStand(Actor $dealer, Deck $deck): void
     {
         $hand = $dealer->getHand();
-        $dealer->point = $this->pointCalc($hand);
-        Message::dealerSecondCardOpen($hand[1]);
-        Message::pointDisplay($dealer);
+        $dealer->point = $this->calcPoint($hand);
+        $this->message->dealerSecondCardOpen($hand[1]);
+        $this->message->displayPoint($dealer);
 
         while ($dealer->point < 17) {
             $this->hitCardHandle($dealer, $deck);
@@ -41,11 +55,11 @@ abstract class Rule
         return;
     }
 
-    public function ComPlayerHitOrStand(Actor $comPlayer, Deck $deck): void
+    public function comPlayerHitOrStand(Actor $comPlayer, Deck $deck): void
     {
         $hand = $comPlayer->getHand();
-        $comPlayer->point = $this->pointCalc($hand);
-        Message::pointDisplay($comPlayer);
+        $comPlayer->point = $this->calcPoint($hand);
+        $this->message->displayPoint($comPlayer);
 
         while ($comPlayer->point < 17) {
             $this->hitCardHandle($comPlayer, $deck);
@@ -53,9 +67,9 @@ abstract class Rule
         return;
     }
 
-    abstract public function playerHitOrStand(Actor $player, Deck $deck);
+    abstract public function playerHitOrStand(Actor $player, Deck $deck): void;
 
-    public function pointCalc(array $hand): int
+    public function calcPoint(array $hand): int
     {
         $numbers = [];
         $points = [];
@@ -85,17 +99,17 @@ abstract class Rule
         $hand = $actor->getHand();
         // hitの処理
         $hitCard = $deck->hitCard();
-        Message::hitMessage($actor, $hitCard[0]);
+        $this->message->hitMessage($actor, $hitCard[0]);
         // ポイントの再計算
         $hand = array_merge($hand, $hitCard);
-        $actor->point = $this->pointCalc($hand);
+        $actor->point = $this->calcPoint($hand);
         // handの更新
         $actor->setHand($hand);
         // メッセージの表示
-        Message::pointDisplay($actor);
+        $this->message->displayPoint($actor);
     }
 
-    protected function bustCheck(int $point)
+    protected function bustCheck(int $point): bool
     {
         return $point > 21;
     }
@@ -114,30 +128,39 @@ abstract class Rule
         foreach ($allPlayers as $player) {
             $this->winCheck($player, $dealer);
         }
-
     }
 
     private function winCheck(Actor $player, Actor $dealer): void
     {
         if ($player->surrender) {
-            Message::surrenderComment($player);
+            $this->message->surrenderComment($player);
             return;
         }
 
+        $this->winCheckByBust($player, $dealer);
+    }
+
+    private function winCheckByBust(Actor $player, Actor $dealer): void
+    {
         if ($this->bustCheck($player->point) && $this->bustCheck($dealer->point)) {
-            Message::drawComment($player, $dealer);
+            $this->message->commentJudgement($player, $dealer, static::DRAW);
         } elseif ($this->bustCheck($player->point) && !$this->bustCheck($dealer->point)) {
-            Message::loseComment($player);
+            $this->message->commentJudgement($player, $dealer, static::LOSE);
         } elseif (!$this->bustCheck($player->point) && $this->bustCheck($dealer->point)) {
-            Message::winComment($player);
-        } else {
-            if ($player->point === $dealer->point) {
-                Message::drawComment($player, $dealer);
-            } elseif ($player->point > $dealer->point) {
-                Message::winComment($player);
-            } else {
-                Message::loseComment($player);
-            }
+            $this->message->commentJudgement($player, $dealer, static::WIN);
+        } elseif (!$this->bustCheck($player->point) && !$this->bustCheck($dealer->point)) {
+            $this->winCheckByPoint($player, $dealer);
+        }
+    }
+
+    private function winCheckByPoint(Actor $player, Actor $dealer): void
+    {
+        if ($player->point === $dealer->point) {
+            $this->message->commentJudgement($player, $dealer, static::DRAW);
+        } elseif ($player->point > $dealer->point) {
+            $this->message->commentJudgement($player, $dealer, static::WIN);
+        } elseif ($player->point < $dealer->point) {
+            $this->message->commentJudgement($player, $dealer, static::LOSE);
         }
     }
 }

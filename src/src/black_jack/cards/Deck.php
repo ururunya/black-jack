@@ -13,8 +13,8 @@ class Deck
 
     public function __construct()
     {
-        foreach (static::SUIT as $suit) {
-            foreach (static::NUMBER as $number) {
+        foreach (self::SUIT as $suit) {
+            foreach (self::NUMBER as $number) {
                 $this->deck[] = new Card($suit, $number);
             }
         }
@@ -23,7 +23,7 @@ class Deck
     public function dealCards(): array
     {
         shuffle($this->deck);
-        return array_splice($this->deck, 0, static::CARD_NUM);
+        return array_splice($this->deck, 0, self::CARD_NUM);
     }
 
     public function hitCard(): array

@@ -14,12 +14,12 @@ class SimpleRule extends Rule
     public function playerHitOrStand(Actor $player, Deck $deck): void
     {
         $hand = $player->getHand();
-        $player->point = $this->pointCalc($hand);
-        Message::pointDisplay($player);
+        $player->point = $this->calcPoint($hand);
+        $this->message->displayPoint($player);
 
         while (true) {
             // hitするかどうか
-            if (!Message::QuestionAndReply()) {
+            if (!$this->message->questionChoice(static::HIT)) {
                 return;
             }
 
@@ -29,7 +29,5 @@ class SimpleRule extends Rule
                 return;
             }
         }
-        return;
     }
-
 }

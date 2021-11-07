@@ -17,16 +17,20 @@ use BlackJack\Cards\Deck;
 use BlackJack\Message;
 use BlackJack\Rules\SimpleRule;
 use BlackJack\Rules\ExtraRule;
+use BlackJack\Rules\Rule;
 
 class Game
 {
+    private Message $message;
     public function __construct(private int $numberOfPlayer, private string $ruleName)
     {
+        $this->message = new Message();
     }
 
-    public function start()
+    public function start(): void
     {
         $deck = new Deck();
+
         $rule = $this->getRule($this->ruleName);
         $actors = [];
         $comPlayers = [];
@@ -50,7 +54,7 @@ class Game
             $actor->dealCards($deck);
         }
 
-        Message::startMessage($actors);
+        $this->message->startMessage($actors);
 
         foreach ($actors as $actor) {
             $actor->hitOrStand($deck);
@@ -60,15 +64,13 @@ class Game
         echo 'ブラックジャックを終了します。';
     }
 
-    private function getRule(string $ruleName)
+    private function getRule(string $ruleName): Rule
     {
         if ($ruleName === 'simple') {
             return new SimpleRule();
         } elseif ($ruleName === 'extra') {
             return new ExtraRule();
-        } else {
-            exit("「simple」か「extra」を入力してください。\n");
         }
+        exit("「simple」か「extra」を入力してください。\n");
     }
-
 }
