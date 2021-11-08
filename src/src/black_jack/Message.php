@@ -86,6 +86,7 @@ class Message
         } elseif ($action === 'split') {
             return $this->questionSplit();
         }
+
         return true;
     }
 

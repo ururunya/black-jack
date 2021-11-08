@@ -22,26 +22,32 @@ use BlackJack\Rules\Rule;
 class Game
 {
     private Message $message;
-    public function __construct(private int $numberOfPlayer, private string $ruleName)
+
+    public function __construct()
     {
         $this->message = new Message();
     }
 
     public function start(): void
     {
+        $numberOfPlayer = (int) readline('あなたを含めたプレイヤーの数を入力してください。（1～3）');
+        $numberOfPlayer = $numberOfPlayer > 3 ? 3 : $numberOfPlayer;
+
+        $ruleName = readline('使用するルール番号を入力してください。（1: シンプルルール、2: エキストラルール）');
+        $rule = $this->getRule($ruleName);
+
         $deck = new Deck();
 
-        $rule = $this->getRule($this->ruleName);
         $actors = [];
         $comPlayers = [];
 
         $player = new Player($rule);
         $dealer = new Dealer($rule);
 
-        $this->numberOfPlayer = $this->numberOfPlayer > 3 ? 3 : $this->numberOfPlayer;
 
-        if ($this->numberOfPlayer > 1) {
-            for ($i = 1; $i < $this->numberOfPlayer; $i++) {
+
+        if ($numberOfPlayer > 1) {
+            for ($i = 1; $i < $numberOfPlayer; $i++) {
                 $comPlayer = new ComPlayer($rule);
                 $comPlayer->name = "comPlayer{$i}";
                 $comPlayers[] = $comPlayer;
@@ -61,16 +67,17 @@ class Game
         }
 
         $rule->whichWinPlayerOrDealer($actors);
-        echo 'ブラックジャックを終了します。';
+        echo 'ブラックジャックを終了します。' . PHP_EOL;
     }
 
     private function getRule(string $ruleName): Rule
     {
-        if ($ruleName === 'simple') {
+        if ($ruleName === '1') {
             return new SimpleRule();
-        } elseif ($ruleName === 'extra') {
+        } elseif ($ruleName === '2') {
             return new ExtraRule();
         }
-        exit("「simple」か「extra」を入力してください。\n");
+        echo '「1」か「2」を入力してください。' . PHP_EOL;
+        return $this->getRule($ruleName);
     }
 }
