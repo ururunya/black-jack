@@ -20,13 +20,13 @@ class SimpleRule extends Rule
         while (true) {
             // hitするかどうか
             if (!$this->message->questionChoice(static::HIT)) {
-                return;
+                break;
             }
 
             $this->hitCardHandle($player, $deck);
 
             if ($this->bustCheck($player->point)) {
-                return;
+                break;
             }
         }
     }

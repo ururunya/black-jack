@@ -5,7 +5,6 @@ namespace BlackJack\Rules;
 require_once __DIR__ . '/../Message.php';
 
 use BlackJack\Actors\Actor;
-use BlackJack\Actors\Player;
 use BlackJack\Cards\Deck;
 use BlackJack\Message;
 
