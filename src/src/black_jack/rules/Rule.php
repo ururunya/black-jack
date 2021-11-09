@@ -81,9 +81,12 @@ abstract class Rule
 
         $numberFrequency = array_count_values($numbers);
 
+        // bustしていた時、Aをポイント1として再計算
+        // Aが複数の場合も段階的に11 -> 1 としてカウントしていく
         if ($this->bustCheck($sum) && array_key_exists('A', $numberFrequency)) {
             for ($i = 0; $i < $numberFrequency['A']; $i++) {
                 $sum -= static::ACE_POINT_DIFFERENCE;
+                // bustしなくなった時点で終了
                 if (!$this->bustCheck($sum)) {
                     return $sum;
                 }
@@ -153,15 +156,19 @@ abstract class Rule
     // bustによる勝敗評価。どちらもbustしていない時のみ、pointによる勝敗評価
     private function winCheckByBust(Actor $player, Actor $dealer): int
     {
+        // どちらもbustしたとき、賭けたチップが戻る
         if ($this->bustCheck($player->point) && $this->bustCheck($dealer->point)) {
             $this->message->commentJudgement($player, $dealer, static::DRAW);
             return $player->bet;
+        // プレイヤーのみbustしたとき、賭けたチップは没収
         } elseif ($this->bustCheck($player->point) && !$this->bustCheck($dealer->point)) {
             $this->message->commentJudgement($player, $dealer, static::LOSE);
             return 0;
+        // ディーラーのみbustしたとき、賭けたチップの倍をゲット
         } elseif (!$this->bustCheck($player->point) && $this->bustCheck($dealer->point)) {
             $this->message->commentJudgement($player, $dealer, static::WIN);
             return $player->bet * 2;
+        // どちらもbustしていない時、point比較での勝敗判定へ
         } elseif (!$this->bustCheck($player->point) && !$this->bustCheck($dealer->point)) {
             return $this->winCheckByPoint($player, $dealer);
         }
@@ -170,12 +177,27 @@ abstract class Rule
     // pointによる勝敗評価
     private function winCheckByPoint(Actor $player, Actor $dealer): int
     {
+        // pointが同点のとき
         if ($player->point === $dealer->point) {
+            // ディーラーがナチュラル21で、プレイヤーがナチュラル21ではない時は負け
+            if ($player->point === 21 && count($player->getHand()) > 2 && count($dealer->getHand()) === 2) {
+                $this->message->commentJudgement($player, $dealer, static::LOSE);
+                return 0;
+            }
+
             $this->message->commentJudgement($player, $dealer, static::DRAW);
             return $player->bet;
+        // プレイヤーのpointのほうが高い時、勝ち
         } elseif ($player->point > $dealer->point) {
+            // プレイヤーがナチュラル21で勝った場合、ベットの2.5倍のチップ獲得
+            if ($player->point === 21 && count($player->getHand()) === 2) {
+                $this->message->commentJudgement($player, $dealer, static::WIN);
+                return $player->bet * 2.5;
+            }
+            // 通常の勝ちのとき、ベットの2倍のチップ獲得
             $this->message->commentJudgement($player, $dealer, static::WIN);
             return $player->bet * 2;
+        // プレイヤーのpointのほうが低い時、ベットしたチップは没収
         } elseif ($player->point < $dealer->point) {
             $this->message->commentJudgement($player, $dealer, static::LOSE);
             return 0;

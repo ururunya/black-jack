@@ -39,7 +39,7 @@ class Game
         echo "現在、チップを{$this->casinoChips}枚もっています。" . PHP_EOL;
 
 
-        $deck = new Deck();
+
 
         $actors = [];
         $comPlayers = [];
@@ -59,6 +59,7 @@ class Game
         $actors = [$player, ...$comPlayers, $dealer];
 
         while (true) {
+            $deck = new Deck();
             $this->play($actors, $deck, $rule);
             // チップが0以下になっていたら強制終了
             if ($this->casinoChips <= 0) {
@@ -103,7 +104,7 @@ class Game
         $this->casinoChips -= $newPlayerBet;
 
         // 勝敗結果によって返ってくるチップ数
-        $getChips = $rule->whichWinPlayerOrDealer($actors);
+        $getChips = (int) $rule->whichWinPlayerOrDealer($actors);
         $this->casinoChips += $getChips;
 
         // Playerインスタンスの$betと$surrenderと$splitPlayersを初期化
