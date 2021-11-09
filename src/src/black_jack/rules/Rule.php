@@ -113,53 +113,72 @@ abstract class Rule
         return $point > 21;
     }
 
-    public function whichWinPlayerOrDealer(array $actors): void
+    public function whichWinPlayerOrDealer(array $actors): int
     {
+        // 各Actorの勝敗判定のためにPlayerの配列作成
         $player = $actors[0];
         $dealer = array_pop($actors);
         $comPlayers = array_slice($actors, 1);
         $allPlayers = [$player, ...$comPlayers];
-        // $playerが$splitPlayerを持っている場合
-        if (isset($player->splitPlayers)) {
+        $playerWinChips = 0;
+
+        // $playerが$splitPlayerを持っている場合の$allPlayers
+        if (!empty($player->splitPlayers)) {
             $allPlayers = [...$player->splitPlayers, ...$comPlayers];
         }
 
         foreach ($allPlayers as $player) {
+            // Player または SplitPlayer の時のみ、獲得チップを計算
+            if ($player::class === 'BlackJack\Actors\Player' || $player::class === 'BlackJack\Actors\SplitPlayer') {
+                $playerWinChips += $this->winCheck($player, $dealer);
+                continue;
+            }
             $this->winCheck($player, $dealer);
         }
+
+        return $playerWinChips;
     }
 
-    private function winCheck(Actor $player, Actor $dealer): void
+    private function winCheck(Actor $player, Actor $dealer): int
     {
+        // サレンダーしたときは、ベットを半分返す
         if ($player->surrender) {
             $this->message->surrenderComment($player);
-            return;
+            return $player->bet / 2;
         }
 
-        $this->winCheckByBust($player, $dealer);
+        return $this->winCheckByBust($player, $dealer);
     }
 
-    private function winCheckByBust(Actor $player, Actor $dealer): void
+    // bustによる勝敗評価。どちらもbustしていない時のみ、pointによる勝敗評価
+    private function winCheckByBust(Actor $player, Actor $dealer): int
     {
         if ($this->bustCheck($player->point) && $this->bustCheck($dealer->point)) {
             $this->message->commentJudgement($player, $dealer, static::DRAW);
+            return $player->bet;
         } elseif ($this->bustCheck($player->point) && !$this->bustCheck($dealer->point)) {
             $this->message->commentJudgement($player, $dealer, static::LOSE);
+            return 0;
         } elseif (!$this->bustCheck($player->point) && $this->bustCheck($dealer->point)) {
             $this->message->commentJudgement($player, $dealer, static::WIN);
+            return $player->bet * 2;
         } elseif (!$this->bustCheck($player->point) && !$this->bustCheck($dealer->point)) {
-            $this->winCheckByPoint($player, $dealer);
+            return $this->winCheckByPoint($player, $dealer);
         }
     }
 
-    private function winCheckByPoint(Actor $player, Actor $dealer): void
+    // pointによる勝敗評価
+    private function winCheckByPoint(Actor $player, Actor $dealer): int
     {
         if ($player->point === $dealer->point) {
             $this->message->commentJudgement($player, $dealer, static::DRAW);
+            return $player->bet;
         } elseif ($player->point > $dealer->point) {
             $this->message->commentJudgement($player, $dealer, static::WIN);
+            return $player->bet * 2;
         } elseif ($player->point < $dealer->point) {
             $this->message->commentJudgement($player, $dealer, static::LOSE);
+            return 0;
         }
     }
 }

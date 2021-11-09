@@ -19,6 +19,7 @@ class ExtraRule extends Rule
         $this->message->displayPoint($player);
         // ダブルダウンするか
         if ($this->message->questionChoice(static::DOUBLE_DOWN)) {
+            $player->bet *= 2;
             $this->doubleDown($player, $deck);
             return;
         }
@@ -66,6 +67,7 @@ class ExtraRule extends Rule
             $splitPlayer->setHand($splitHands[$index]);
             $number = $index + 1;
             $splitPlayer->name = "スプリットハンド{$number}";
+            $splitPlayer->bet = $player->bet;
         }
 
         foreach ($splitPlayers as $splitPlayer) {
@@ -74,10 +76,12 @@ class ExtraRule extends Rule
         }
 
         $player->splitPlayers = $splitPlayers;
+
         // Aのペアの場合、それぞれ1枚しか引くことができないルールなので終了
         if ($hand[0]->number === 'A' && $hand[1]->number === 'A') {
             return;
         }
+
         foreach ($splitPlayers as $splitPlayer) {
             $this->playerHitOrStand($splitPlayer, $deck);
         }

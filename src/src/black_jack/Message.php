@@ -85,6 +85,8 @@ class Message
             return $this->questionSurrender();
         } elseif ($action === 'split') {
             return $this->questionSplit();
+        } elseif ($action === 'continue') {
+            return $this->questionContinue();
         }
 
         return true;
@@ -136,6 +138,33 @@ class Message
         }
         echo 'Y/yかN/nを入力してください。';
         return $this->questionSurrender();
+    }
+
+    private function questionContinue(): bool
+    {
+        $reply = readline('次のゲームをしますか？（Y/N）');
+        if ($reply === 'Y' || $reply === 'y') {
+            return true;
+        } elseif ($reply === 'N' || $reply === 'n') {
+            return false;
+        }
+        echo 'Y/yかN/nを入力してください。';
+        return $this->questionContinue();
+    }
+
+    public function howManyBet(int $chips): int
+    {
+        $reply = readline('ベットする枚数を入力してください。');
+        if ((int) $reply) {
+            if ((int) $reply <= $chips) {
+                return $reply;
+            }
+            echo "現在、持っているチップは{$chips}しかありません。" . PHP_EOL;
+            return $this->howManyBet($chips);
+        }
+
+        echo '数字を入力してください。' . PHP_EOL;
+        return $this->howManyBet($chips);
     }
 
     /**
